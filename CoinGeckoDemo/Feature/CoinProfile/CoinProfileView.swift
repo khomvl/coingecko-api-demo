@@ -13,11 +13,17 @@ struct CoinProfileView: View {
         NavigationStack {
             VStack {
                 makeChart()
+                    .onAppear {
+                        chartViewModel.fetchCandlesData()
+                    }
                 
                 Spacer()
                 
                 if isPortrait {
                     makeDetailsList()
+                        .onAppear {
+                            detailsViewModel.fetchCoinDetails()
+                        }
                 }
             }
             .navigationTitle(coinName)

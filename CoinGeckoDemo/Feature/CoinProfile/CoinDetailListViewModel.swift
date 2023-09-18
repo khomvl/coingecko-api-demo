@@ -16,8 +16,6 @@ final class CoinDetailListViewModel: ObservableObject {
         self.coinId = coinId
         self.currency = currency
         self.client = client
-        
-        fetchCoinDetails()
     }
     
     func fetchCoinDetails() {

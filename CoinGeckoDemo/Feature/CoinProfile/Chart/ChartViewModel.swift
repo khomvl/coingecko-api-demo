@@ -17,8 +17,6 @@ final class ChartViewModel: ObservableObject {
     ) {
         self.coinId = coinId
         self.client = client
-        
-        fetchCandlesData()
     }
     
     func fetchCandlesData() {
