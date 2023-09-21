@@ -8,4 +8,12 @@ enum Formatters {
         formatter.numberStyle = .currency
         return formatter
     }()
+    
+    static let percentFormatter: NumberFormatter = {
+        let formatter = NumberFormatter()
+        formatter.minimumFractionDigits = 2
+        formatter.maximumFractionDigits = 2
+        formatter.numberStyle = .percent
+        return formatter
+    }()
 }

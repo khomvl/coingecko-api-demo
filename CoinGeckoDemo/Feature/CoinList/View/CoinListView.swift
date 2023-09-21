@@ -27,6 +27,11 @@ struct CoinListView: View {
                                     currency: self.viewModel.currency
                                 )
                             )
+                            .task {
+                                withAnimation {
+                                    self.showErrorToast = false
+                                }
+                            }
                         } label: {
                             CoinListItemView(viewModel: viewModel)
                                 .task {
@@ -43,34 +48,27 @@ struct CoinListView: View {
                 viewModel.reset()
             }
             .task {
+                guard viewModel.coins.isEmpty else {
+                    return
+                }
+                
                 viewModel.fetchMoreCoins()
             }
             .navigationTitle("Coins")
         }
-        .overlay {
-            VStack {
-                ErrorToast(error: $viewModel.error)
-                    .offset(y: showErrorToast ? 0 : -200)
-                    .onTapGesture {
-                        withAnimation {
-                            self.showErrorToast = false
-                        }
-                    }
-                Spacer()
-            }
-        }
-        .onReceive(viewModel.$error) { output in
-            guard output != nil else {
-                return
-            }
-            
-            withAnimation {
+        .overlay(
+            ErrorToast(
+                showErrorToast: $showErrorToast,
+                errorMessage: $viewModel.errorMessage
+            )
+        )
+        .onReceive(viewModel.$errorMessage) { output in
+            if output != nil {
                 showErrorToast = true
-                
-            }
-            Task.delayed(byTimeInterval: 2) { @MainActor in
-                withAnimation {
-                    showErrorToast = false
+                Task.delayed(byTimeInterval: 2) { @MainActor in
+                    withAnimation {
+                        showErrorToast = false
+                    }
                 }
             }
         }

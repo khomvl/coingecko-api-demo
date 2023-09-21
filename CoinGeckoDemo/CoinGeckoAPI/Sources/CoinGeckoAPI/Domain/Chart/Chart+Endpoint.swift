@@ -31,17 +31,23 @@ extension Chart.Endpoint: Endpoint, URLRequestBuildable {
     }
     
     public func decode(from responseData: Data) throws -> ResponseType {
-        let rawData = try JSONDecoder().decode([[Double]].self, from: responseData)
+        let rawData = try JSONDecoder().decode([[Decimal]].self, from: responseData)
         return rawData
             .map { rawCandle in
                 .init(
-                    timestamp: Date(timeIntervalSince1970: (rawCandle[safe: 0] ?? 0.0) / 1000),
-                    open: rawCandle[safe: 1] ?? 0.0,
-                    high: rawCandle[safe: 2] ?? 0.0,
-                    low: rawCandle[safe: 3] ?? 0.0,
-                    close: rawCandle[safe: 4] ?? 0.0
+                    timestamp: Date(timeIntervalSince1970: (rawCandle[safe: 0]?.doubleValue ?? 0.0) / 1000),
+                    open: rawCandle[safe: 1] ?? .zero,
+                    high: rawCandle[safe: 2] ?? .zero,
+                    low: rawCandle[safe: 3] ?? .zero,
+                    close: rawCandle[safe: 4] ?? .zero
                 )
             }
+    }
+}
+
+private extension Decimal {
+    var doubleValue: Double {
+        return NSDecimalNumber(decimal: self).doubleValue
     }
 }
 

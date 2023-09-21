@@ -13,7 +13,7 @@ struct CoinProfileView: View {
         NavigationStack {
             VStack {
                 makeChart()
-                    .onAppear {
+                    .task {
                         chartViewModel.fetchCandlesData()
                     }
                 
@@ -21,7 +21,7 @@ struct CoinProfileView: View {
                 
                 if isPortrait {
                     makeDetailsList()
-                        .onAppear {
+                        .task {
                             detailsViewModel.fetchCoinDetails()
                         }
                 }

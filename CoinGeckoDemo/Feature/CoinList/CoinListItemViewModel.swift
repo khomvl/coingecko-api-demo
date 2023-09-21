@@ -17,12 +17,14 @@ struct CoinListItemViewModel: Identifiable {
         self.subtitle = coin.name
         
         // FIXME: potential bug here, currency is lacking single source of truth
-        let formatter = Formatters.priceFormatter
-        formatter.currencyCode = currency.rawValue
-        self.price = formatter.string(from: NSNumber(value: coin.currentPrice)) ?? "—"
+        let priceFormatter = Formatters.priceFormatter
+        priceFormatter.currencyCode = currency.rawValue
+        self.price = priceFormatter.string(from: coin.currentPrice)
         
+        let percentFormatter = Formatters.percentFormatter
         let changePositive = coin.priceChangePercentage24H > 0
-        self.priceChange = String(format: "\(changePositive ? "+" : "")%.2f%%", coin.priceChangePercentage24H)
+        let formattedPercentChange = percentFormatter.string(from: coin.priceChangePercentage24H / 100)
+        self.priceChange = "\(changePositive ? "+" : "")\(formattedPercentChange)"
         self.priceColor = changePositive ? .textPriceUp : .textPriceDown
     }
 }

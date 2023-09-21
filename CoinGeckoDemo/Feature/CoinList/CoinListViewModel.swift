@@ -3,11 +3,13 @@ import CoinGeckoAPI
 
 final class CoinListViewModel: ObservableObject {
     private let client: APIClient
-    private var pageSize = 15
+    private var pageSize = 10
     private var currentPage = 1
+    private var didReachEnd = false
     private let threshold = 3
     private var currentTask: Task<Void, Error>?
-    private var didReachEnd = false
+    private var retryTask: Task<Void, Error>?
+    private let retryRate: TimeInterval = 60
     
     var currency: Currency = .usd {
         didSet {
@@ -16,7 +18,7 @@ final class CoinListViewModel: ObservableObject {
     }
     
     @Published var coins: [Coin] = []
-    @Published var error: Error?
+    @Published var errorMessage: String?
     
     init(client: APIClient = DIContainer.shared.resolve(type: APIClient.self)) {
         self.client = client
@@ -45,16 +47,17 @@ final class CoinListViewModel: ObservableObject {
                     didReachEnd = true
                     return
                 }
-
+                
                 coins += newCoins
                 currentPage += 1
-                pageSize = 10
             } catch {
                 if Task.isCancelled {
                     return
                 }
                 
-                self.error = error
+                self.errorMessage = (error as? APIError)?.status.errorMessage
+                
+                startRetrying()
             }
         }
     }
@@ -67,7 +70,26 @@ final class CoinListViewModel: ObservableObject {
         currentPage = 1
         coins = []
         didReachEnd = false
-        error = nil
+        errorMessage = nil
+        stopRetrying()
         fetchMoreCoins()
+    }
+}
+
+private extension CoinListViewModel {
+    func startRetrying() {
+        guard self.retryTask == nil else {
+            return
+        }
+        
+        retryTask = Task.delayed(byTimeInterval: retryRate) { [self] in
+            fetchMoreCoins()
+            retryTask = nil
+        }
+    }
+    
+    func stopRetrying() {
+        retryTask?.cancel()
+        retryTask = nil
     }
 }

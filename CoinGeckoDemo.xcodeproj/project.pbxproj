@@ -8,7 +8,6 @@
 
 /* Begin PBXBuildFile section */
 		93289B252AB7717200A86233 /* Formatters.swift in Sources */ = {isa = PBXBuildFile; fileRef = 93289B242AB7717200A86233 /* Formatters.swift */; };
-		93289B272AB78B3C00A86233 /* NumberFormatter+Double.swift in Sources */ = {isa = PBXBuildFile; fileRef = 93289B262AB78B3C00A86233 /* NumberFormatter+Double.swift */; };
 		93289B2A2AB79DFA00A86233 /* CoinDetailViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 93289B292AB79DFA00A86233 /* CoinDetailViewModel.swift */; };
 		93289B2C2AB79E1C00A86233 /* PropertyVisitor.swift in Sources */ = {isa = PBXBuildFile; fileRef = 93289B2B2AB79E1C00A86233 /* PropertyVisitor.swift */; };
 		93289B2E2AB79E8200A86233 /* CoinPriceVisitor.swift in Sources */ = {isa = PBXBuildFile; fileRef = 93289B2D2AB79E8200A86233 /* CoinPriceVisitor.swift */; };
@@ -20,6 +19,7 @@
 		93289B3A2AB79F0500A86233 /* AllTimeLowVisitor.swift in Sources */ = {isa = PBXBuildFile; fileRef = 93289B392AB79F0500A86233 /* AllTimeLowVisitor.swift */; };
 		93289B3C2AB7A25700A86233 /* DIContainer.swift in Sources */ = {isa = PBXBuildFile; fileRef = 93289B3B2AB7A25700A86233 /* DIContainer.swift */; };
 		93289B3E2AB7A67200A86233 /* CoinDetailView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 93289B3D2AB7A67200A86233 /* CoinDetailView.swift */; };
+		93986E442ABB8A1100F7948B /* NumberFormatter+Decimal.swift in Sources */ = {isa = PBXBuildFile; fileRef = 93986E432ABB8A1000F7948B /* NumberFormatter+Decimal.swift */; };
 		93BBD0C72AB48AAB00108627 /* CoinGeckoDemoApp.swift in Sources */ = {isa = PBXBuildFile; fileRef = 93BBD0C62AB48AAB00108627 /* CoinGeckoDemoApp.swift */; };
 		93BBD0C92AB48AAB00108627 /* CoinListView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 93BBD0C82AB48AAB00108627 /* CoinListView.swift */; };
 		93BBD0CB2AB48AAC00108627 /* Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = 93BBD0CA2AB48AAC00108627 /* Assets.xcassets */; };
@@ -41,7 +41,6 @@
 
 /* Begin PBXFileReference section */
 		93289B242AB7717200A86233 /* Formatters.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Formatters.swift; sourceTree = "<group>"; };
-		93289B262AB78B3C00A86233 /* NumberFormatter+Double.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "NumberFormatter+Double.swift"; sourceTree = "<group>"; };
 		93289B292AB79DFA00A86233 /* CoinDetailViewModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CoinDetailViewModel.swift; sourceTree = "<group>"; };
 		93289B2B2AB79E1C00A86233 /* PropertyVisitor.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PropertyVisitor.swift; sourceTree = "<group>"; };
 		93289B2D2AB79E8200A86233 /* CoinPriceVisitor.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CoinPriceVisitor.swift; sourceTree = "<group>"; };
@@ -53,6 +52,8 @@
 		93289B392AB79F0500A86233 /* AllTimeLowVisitor.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AllTimeLowVisitor.swift; sourceTree = "<group>"; };
 		93289B3B2AB7A25700A86233 /* DIContainer.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DIContainer.swift; sourceTree = "<group>"; };
 		93289B3D2AB7A67200A86233 /* CoinDetailView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CoinDetailView.swift; sourceTree = "<group>"; };
+		93986E3F2ABB7F4600F7948B /* AppState.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AppState.swift; sourceTree = "<group>"; };
+		93986E432ABB8A1000F7948B /* NumberFormatter+Decimal.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = "NumberFormatter+Decimal.swift"; sourceTree = "<group>"; };
 		93BBD0C32AB48AAB00108627 /* CoinGeckoDemo.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = CoinGeckoDemo.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		93BBD0C62AB48AAB00108627 /* CoinGeckoDemoApp.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CoinGeckoDemoApp.swift; sourceTree = "<group>"; };
 		93BBD0C82AB48AAB00108627 /* CoinListView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CoinListView.swift; sourceTree = "<group>"; };
@@ -108,6 +109,14 @@
 			path = PropertyVisitors;
 			sourceTree = "<group>";
 		};
+		93986E422ABB896800F7948B /* Recovered References */ = {
+			isa = PBXGroup;
+			children = (
+				93986E3F2ABB7F4600F7948B /* AppState.swift */,
+			);
+			name = "Recovered References";
+			sourceTree = "<group>";
+		};
 		93BBD0BA2AB48AAB00108627 = {
 			isa = PBXGroup;
 			children = (
@@ -115,6 +124,7 @@
 				93BBD0C52AB48AAB00108627 /* CoinGeckoDemo */,
 				93BBD0C42AB48AAB00108627 /* Products */,
 				93BBD0D82AB5AF7C00108627 /* Frameworks */,
+				93986E422ABB896800F7948B /* Recovered References */,
 			);
 			sourceTree = "<group>";
 		};
@@ -190,8 +200,8 @@
 				93D913052AB624130028393C /* View */,
 				93BBD0EC2AB5DB3900108627 /* Color+Extension.swift */,
 				93D913082AB626690028393C /* Task+Delayed.swift */,
+				93986E432ABB8A1000F7948B /* NumberFormatter+Decimal.swift */,
 				93289B242AB7717200A86233 /* Formatters.swift */,
-				93289B262AB78B3C00A86233 /* NumberFormatter+Double.swift */,
 				93289B3B2AB7A25700A86233 /* DIContainer.swift */,
 			);
 			path = Core;
@@ -300,13 +310,13 @@
 				93289B362AB79EF200A86233 /* TotalVolumeVisitor.swift in Sources */,
 				93289B342AB79EE900A86233 /* MarketCapVisitor.swift in Sources */,
 				93D913032AB6207F0028393C /* CoinListItemViewModel.swift in Sources */,
+				93986E442ABB8A1100F7948B /* NumberFormatter+Decimal.swift in Sources */,
 				93D913092AB626690028393C /* Task+Delayed.swift in Sources */,
 				93BBD0C72AB48AAB00108627 /* CoinGeckoDemoApp.swift in Sources */,
 				93289B2C2AB79E1C00A86233 /* PropertyVisitor.swift in Sources */,
 				93D913192AB75EE80028393C /* CoinDetailListViewModel.swift in Sources */,
 				93BBD0F82AB61AA100108627 /* CoinListItemShimmerView.swift in Sources */,
 				93289B3C2AB7A25700A86233 /* DIContainer.swift in Sources */,
-				93289B272AB78B3C00A86233 /* NumberFormatter+Double.swift in Sources */,
 				93D913152AB677F40028393C /* CandleMark.swift in Sources */,
 				93289B302AB79EB100A86233 /* Coin24HLowHighVisitor.swift in Sources */,
 				93289B2A2AB79DFA00A86233 /* CoinDetailViewModel.swift in Sources */,
