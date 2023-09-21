@@ -2,75 +2,94 @@ import SwiftUI
 import CoinGeckoAPI
 
 struct CoinListView: View {
-    @ObservedObject var viewModel: CoinListViewModel
-    @State var showErrorToast: Bool = false
+    @EnvironmentObject var appState: AppState
+    var interactor: CoinListInteractor
+    @State var errorMessage: String?
     
     var body: some View {
         NavigationStack {
             List {
-                if viewModel.coins.isEmpty {
-                    ForEach((1...12), id: \.self) { _ in
-                        CoinListItemShimmerView()
-                    }
+                if appState.coinData.isEmpty {
+                    makeSkeleton()
                 } else {
-                    ForEach(viewModel.coins.map {
-                        CoinListItemViewModel(coin: $0, currency: viewModel.currency)
-                    }) { viewModel in
-                        NavigationLink {
-                            CoinProfileView(
-                                coinName: viewModel.title,
-                                chartViewModel: ChartViewModel(
-                                    coinId: viewModel.id
-                                ),
-                                detailsViewModel: CoinDetailListViewModel(
-                                    coinId: viewModel.id,
-                                    currency: self.viewModel.currency
-                                )
-                            )
-                        } label: {
-                            CoinListItemView(viewModel: viewModel)
-                                .task {
-                                    guard self.viewModel.shouldFetchMore(id: viewModel.id) else {
-                                        return
-                                    }
-                                    self.viewModel.fetchMoreCoins()
-                                }
-                        }
-                    }
+                    makeListItems()
                 }
             }
             .refreshable {
-                viewModel.reset()
+                interactor.reset()
+                fetchMoreCoins()
             }
             .task {
-                viewModel.fetchMoreCoins()
+                guard appState.coinData.isEmpty else {
+                    return
+                }
+                
+                fetchMoreCoins()
             }
             .navigationTitle("Coins")
         }
-        .overlay {
-            VStack {
-                ErrorToast(error: $viewModel.error)
-                    .offset(y: showErrorToast ? 0 : -200)
-                    .onTapGesture {
-                        withAnimation {
-                            self.showErrorToast = false
-                        }
+        .overlay(
+            ErrorToast(
+                errorMessage: $errorMessage
+            )
+        )
+    }
+}
+
+private extension CoinListView {
+    
+    @ViewBuilder
+    func makeSkeleton() -> some View {
+        ForEach((1...12), id: \.self) { _ in
+            CoinListItemShimmerView()
+        }
+    }
+    
+    @ViewBuilder
+    func makeListItems() -> some View {
+        ForEach(appState.coinData, id: \.id) { coinData in
+            NavigationLink {
+                CoinProfileView(
+                    interactor: CoinProfileInteractor(coinId: coinData.id)
+                )
+            } label: {
+                CoinListItemView(viewModel: .init(
+                    coinData: coinData,
+                    currency: appState.currency
+                ))
+                .task {
+                    guard interactor.shouldFetchMore(id: coinData.id) else {
+                        return
                     }
-                Spacer()
+                    
+                    fetchMoreCoins()
+                }
             }
         }
-        .onReceive(viewModel.$error) { output in
-            guard output != nil else {
-                return
-            }
-            
-            withAnimation {
-                showErrorToast = true
+    }
+    
+    func fetchMoreCoins() {
+        Task {
+            do {
+                try await interactor.fetchMoreCoins()
+            } catch {
+                handleError(error)
                 
+                // retry
+                Task.delayed(byTimeInterval: 60) { @MainActor in
+                    fetchMoreCoins()
+                }
             }
+        }
+    }
+    
+    func handleError(_ error: Error) {
+        withAnimation {
+            errorMessage = (error as? APIError)?.status.errorMessage ?? "Unknown error occurred"
+            
             Task.delayed(byTimeInterval: 2) { @MainActor in
                 withAnimation {
-                    showErrorToast = false
+                    self.errorMessage = nil
                 }
             }
         }
@@ -78,7 +97,10 @@ struct CoinListView: View {
 }
 
 struct CoinListView_Previews: PreviewProvider {
+    static var appState = DIContainer.shared.resolve(type: AppState.self)
+
     static var previews: some View {
-        CoinListView(viewModel: CoinListViewModel())
+       CoinListView(interactor: CoinListInteractor())
+            .environmentObject(appState)
     }
 }

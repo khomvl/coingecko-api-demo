@@ -2,27 +2,34 @@ import SwiftUI
 import CoinGeckoAPI
 
 struct CoinListItemViewModel: Identifiable {
-    var id: String
-    var title: String
-    var imageUrl: URL
-    var subtitle: String
-    var price: String
-    var priceChange: String
-    var priceColor: Color
+    let id: String
+    let title: String
+    let imageUrl: URL
+    let subtitle: String
+    let price: String
+    let priceChange: String
+    let priceColor: Color
     
-    init(coin: Coin, currency: Currency) {
-        self.id = coin.id
-        self.title = coin.symbol.uppercased()
-        self.imageUrl = coin.image
-        self.subtitle = coin.name
+    init(coinData: CoinDataModel, currency: Currency) {
+        self.id = coinData.id
+        self.title = coinData.symbol.uppercased()
+        self.imageUrl = coinData.image
+        self.subtitle = coinData.name
         
         // FIXME: potential bug here, currency is lacking single source of truth
-        let formatter = Formatters.priceFormatter
-        formatter.currencyCode = currency.rawValue
-        self.price = formatter.string(from: NSNumber(value: coin.currentPrice)) ?? "—"
+        let priceFormatter = Formatters.priceFormatter
+        priceFormatter.currencyCode = currency.rawValue
+        self.price = priceFormatter.string(from: coinData.currentPrice)
         
-        let changePositive = coin.priceChangePercentage24H > 0
-        self.priceChange = String(format: "\(changePositive ? "+" : "")%.2f%%", coin.priceChangePercentage24H)
-        self.priceColor = changePositive ? .textPriceUp : .textPriceDown
+        if let priceChange = coinData.priceChangePercentage24H {
+            let percentFormatter = Formatters.percentFormatter
+            let changePositive = priceChange > 0
+            let formattedPercentChange = percentFormatter.string(from: priceChange / 100)
+            self.priceChange = "\(changePositive ? "+" : "")\(formattedPercentChange)"
+            self.priceColor = changePositive ? .textPriceUp : .textPriceDown
+        } else {
+            self.priceChange = "—"
+            self.priceColor = .textSecondary
+        }
     }
 }

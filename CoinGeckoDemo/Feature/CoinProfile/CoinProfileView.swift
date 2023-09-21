@@ -3,30 +3,45 @@ import Charts
 import CoinGeckoAPI
 
 struct CoinProfileView: View {
-    var coinName: String
+    @EnvironmentObject var appState: AppState
+    @State var failedToLoadChart = false
+    
+    var interactor: CoinProfileInteractor
+    
     @Environment(\.horizontalSizeClass) var horizontalSizeClass
     @Environment(\.verticalSizeClass) var verticalSizeClass
-    @ObservedObject var chartViewModel: ChartViewModel
-    @ObservedObject var detailsViewModel: CoinDetailListViewModel
     
     var body: some View {
         NavigationStack {
             VStack {
                 makeChart()
-                    .onAppear {
-                        chartViewModel.fetchCandlesData()
+                    .task {
+                        let timeoutTask = Task.delayed(byTimeInterval: 10) { @MainActor in
+                            failedToLoadChart = true
+                        }
+                        
+                        Task {
+                            do {
+                                try await interactor.fetchChartData()
+                                timeoutTask.cancel()
+                            } catch {
+                                failedToLoadChart = true
+                            }
+                        }
                     }
                 
                 Spacer()
                 
                 if isPortrait {
                     makeDetailsList()
-                        .onAppear {
-                            detailsViewModel.fetchCoinDetails()
+                        .task {
+                            Task {
+                                try await interactor.fetchCoinDetails()
+                            }
                         }
                 }
             }
-            .navigationTitle(coinName)
+            .navigationTitle(interactor.selectedCoin?.symbol.uppercased() ?? "")
         }
     }
     
@@ -37,14 +52,17 @@ struct CoinProfileView: View {
 
 private extension CoinProfileView {
     @ViewBuilder var chartOverlay: some View {
-        if chartViewModel.timeoutExceeded {
+        if failedToLoadChart {
             VStack(spacing: 8) {
                 Text("Failed to load chart")
                     .font(.callout)
                     .foregroundColor(.candleRed)
                 Button {
-                    chartViewModel.fetchCandlesData()
-                    detailsViewModel.fetchCoinDetails()
+                    Task {
+                        failedToLoadChart = false
+                        try await interactor.fetchChartData()
+                        try await interactor.fetchCoinDetails()
+                    }
                 } label: {
                     Label("Retry", systemImage: "arrow.clockwise")
                         .font(.body.bold())
@@ -52,7 +70,7 @@ private extension CoinProfileView {
             }
         } else {
             // TODO: replace with shimmer
-            if chartViewModel.candles.isEmpty {
+            if interactor.selectedCoin?.chartData.isEmpty == true {
                 ProgressView()
                     .controlSize(.large)
             }
@@ -84,7 +102,7 @@ private extension CoinProfileView {
     @ViewBuilder
     func makeChart() -> some View {
         Chart {
-            ForEach(chartViewModel.candles) { candle in
+            ForEach(interactor.selectedCoin?.chartData ?? []) { candle in
                 makeCandleMark(for: candle)
             }
         }
@@ -97,25 +115,41 @@ private extension CoinProfileView {
     
     @ViewBuilder
     func makeDetailsList() -> some View {
-        List {
-            ForEach(detailsViewModel.details) { detail in
-                // TODO: make shimmer
-                
-                CoinDetailView(title: detail.title) {
-                    Text(detail.value)
-                        .font(.subheadline.bold())
+        if let coin = interactor.selectedCoin {
+            List {
+                ForEach(CoinDetailListViewModel(coinData: coin, currency: appState.currency).details) { detail in
+                    // TODO: make shimmer
+                    
+                    CoinDetailView(title: detail.title) {
+                        Text(detail.value)
+                            .font(.subheadline.bold())
+                    }
                 }
             }
         }
+        
+        EmptyView()
     }
 }
 
 struct CoinProfileView_Previews: PreviewProvider {
+    static var appState: AppState = {
+        let appState = AppState()
+        appState.coinIdsList = ["bitcoin"]
+        appState.coinIdToData = [
+            "bitcoin": .init(
+                id: "bitcoin",
+                symbol: "btc",
+                name: "Bitcoin",
+                image: URL(string: "about:blank")!
+            )
+        ]
+        
+        return appState
+    }()
+    
     static var previews: some View {
-        CoinProfileView(
-            coinName: "BTC",
-            chartViewModel: ChartViewModel(coinId: "bitcoin"),
-            detailsViewModel: CoinDetailListViewModel(coinId: "bitcoin", currency: .usd)
-        )
+        CoinProfileView(interactor: CoinProfileInteractor(coinId: "bitcoin", appState: appState))
+            .environmentObject(appState)
     }
 }

@@ -7,13 +7,13 @@ struct TotalVolumeVisitor: PropertyVisitor {
         self.currency = currency
     }
     
-    func visit(_ data: CoinDetails) -> CoinDetailViewModel {
+    func visit(_ data: CoinDataModel) -> CoinDetailViewModel {
         let formatter = Formatters.priceFormatter
         formatter.currencyCode = currency.rawValue
         
         return .init(
             title: "Total Volume",
-            value: formatter.string(from: data.totalVolume(in: currency))
+            value: formatter.string(from: data.totalVolume)
         )
     }
 }

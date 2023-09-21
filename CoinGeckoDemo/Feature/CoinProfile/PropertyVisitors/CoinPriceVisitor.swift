@@ -7,13 +7,13 @@ struct CoinPriceVisitor: PropertyVisitor {
         self.currency = currency
     }
     
-    func visit(_ data: CoinDetails) -> CoinDetailViewModel {
+    func visit(_ data: CoinDataModel) -> CoinDetailViewModel {
         let formatter = Formatters.priceFormatter
         formatter.currencyCode = currency.rawValue
         
         return .init(
             title: "\(data.name) Price",
-            value: formatter.string(from: data.currentPrice(in: currency))
+            value: formatter.string(from: data.currentPrice)
         )
     }
 }
