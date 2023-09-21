@@ -8,11 +8,16 @@ struct CoinGeckoDemoApp: App {
             type: APIClient.self,
             dependency: CoinGeckoAPIClient(baseUrl: URL(string: "https://api.coingecko.com/")!)
         )
+        DIContainer.shared.register(
+            type: AppState.self,
+            dependency: AppState()
+        )
     }
     
     var body: some Scene {
         WindowGroup {
-            CoinListView(viewModel: CoinListViewModel())
+            CoinListView(interactor: CoinListInteractor())
+                .environmentObject(DIContainer.shared.resolve(type: AppState.self))
         }
     }
 }

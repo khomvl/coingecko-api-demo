@@ -9,6 +9,7 @@ public struct CoinDetails: Decodable {
     
     enum MarketDataCodingKeys: String, CodingKey {
         case currentPrice
+        case priceChangePercentage24HInCurrency
         case allTimeHigh = "ath"
         case allTimeLow = "atl"
         case marketCap
@@ -16,15 +17,14 @@ public struct CoinDetails: Decodable {
         case totalVolume
         case high24H
         case low24H
-        case priceChangePercentage24H
     }
     
     public let id: String
     public let name: String
     public let marketCapRank: Int
-    public let priceChangePercentage24H: Decimal
     
     let currentPrice: [String: Decimal]
+    let priceChangePercentage24HInCurrency: [String: Decimal]
     let allTimeHigh: [String: Decimal]
     let allTimeLow: [String: Decimal]
     let marketCap: [String: Decimal]
@@ -39,7 +39,7 @@ public struct CoinDetails: Decodable {
         self.id = try rootContainer.decode(String.self, forKey: .id)
         self.name = try rootContainer.decode(String.self, forKey: .name)
         self.marketCapRank = try marketDataContainer.decode(Int.self, forKey: .marketCapRank)
-        self.priceChangePercentage24H = try marketDataContainer.decode(Decimal.self, forKey: .priceChangePercentage24H)
+        self.priceChangePercentage24HInCurrency = try marketDataContainer.decode([String: Decimal].self, forKey: .priceChangePercentage24HInCurrency)
         
         self.currentPrice = try marketDataContainer.decode([String: Decimal].self, forKey: .currentPrice)
         self.allTimeHigh = try marketDataContainer.decode([String: Decimal].self, forKey: .allTimeHigh)
@@ -52,6 +52,10 @@ public struct CoinDetails: Decodable {
     
     public func currentPrice(in currency: Currency) -> Decimal? {
         currentPrice[currency.rawValue]
+    }
+    
+    public func priceChangePercentage24H(in currency: Currency) -> Decimal? {
+        priceChangePercentage24HInCurrency[currency.rawValue]
     }
     
     public func allTimeHigh(in currency: Currency) -> Decimal? {

@@ -2,13 +2,12 @@ import SwiftUI
 import CoinGeckoAPI
 
 struct ErrorToast: View {
-    @Binding var showErrorToast: Bool
     @Binding var errorMessage: String?
 
     var body: some View {
         VStack {
-            if showErrorToast {
-                Text(errorMessage ?? "")
+            if let errorMessage {
+                Text(errorMessage)
                     .foregroundColor(.textError)
                     .font(.body)
                     .padding()
@@ -18,7 +17,7 @@ struct ErrorToast: View {
                     .shadow(color: .gray.opacity(0.5), radius: 3)
                     .onTapGesture {
                         withAnimation {
-                            self.showErrorToast = false
+                            self.errorMessage = nil
                         }
                     }
             }
